@@ -12,7 +12,7 @@ public class Index {
     private Map<String, List<WordInfo>> index;
     public Index(String dataDir){
         this.dataDir = dataDir;
-        this.index = new HashMap<>();
+        this.index = null;
     }
     private final List<String> stopWords = Arrays.asList("a", "able", "about",
             "across", "after", "all", "almost", "also", "am", "among", "an",
@@ -53,6 +53,20 @@ public class Index {
                 List<WordInfo> occurrences = index.computeIfAbsent(word,k -> new LinkedList<>());
                 occurrences.add(new WordInfo(file.getName(), pos));
             }
+        }
+    }
+
+    public void serialIndexing(){
+        try {
+            index = new HashMap<>();
+            File[] files = new File(dataDir).listFiles();
+            if(files == null) throw new Exception("data directory is not valid");
+            System.out.println("\n\n<-----SERIAL ALGORITHM----->");
+            long start = System.currentTimeMillis();
+            for (File file : files) indexFile(file);
+            System.out.println((System.currentTimeMillis() - start));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
