@@ -70,5 +70,34 @@ public class Index {
         }
     }
 
+    public void search(List<String> words) {
+        try{
+            if(index == null) throw new Exception("You must index the files before searching");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        for (String _word : words) {
+            String word = _word.toLowerCase();
+            List<WordInfo> occurrences = index.get(word);
+            System.out.print(word + " ");
+            if (occurrences != null) {
+                String fileName = "";
+                for (WordInfo t : occurrences) {
+                    String currentFileName = t.fileName;
+                    if(!currentFileName.equals(fileName)){
+                        System.out.print(currentFileName + " ");
+                        fileName = currentFileName;
+                    }
+                    System.out.print(t.position + " ");
+                }
+            }
+            else {
+                System.out.print("not found");
+            }
+            System.out.println();
+        }
+    }
+
 
 }
