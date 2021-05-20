@@ -79,17 +79,18 @@ public class Index {
         for (String _word : words) {
             String word = _word.toLowerCase();
             List<WordInfo> occurrences = index.get(word);
-            System.out.print(word + " ");
+            System.out.println("<---" + word + "--->");
             if (occurrences != null) {
                 String fileName = "";
                 for (WordInfo t : occurrences) {
                     String currentFileName = t.fileName;
                     if(!currentFileName.equals(fileName)){
-                        System.out.print(currentFileName + " ");
+                        System.out.print("\n" + currentFileName + " ");
                         fileName = currentFileName;
                     }
                     System.out.print(t.position + " ");
                 }
+                System.out.println();
             }
             else {
                 System.out.print("not found");
