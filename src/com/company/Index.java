@@ -123,7 +123,13 @@ public class Index {
     private Thread partIndexing(final File[] files, final int partNumber, int threadsNumber) {
         return new Thread(() -> {
             int from = partNumber * (files.length / threadsNumber);
-            int to = Math.min(files.length,(partNumber + 1) * (files.length / threadsNumber) );
+            int to;
+            if(partNumber == threadsNumber-1){
+                to = files.length;
+            }
+            else {
+                to = (partNumber + 1) * (files.length / threadsNumber);
+            }
             for (File file : Arrays.copyOfRange(files, from,to)) {
                 try{
                     indexFile(file);

@@ -8,6 +8,7 @@ public class Main {
         String inputs = "film,very,love";
         Index idx = new Index();
         idx.serialIndexing("./src/data/");
+        idx.search(Arrays.asList(inputs.split(",")));
         idx.clear();
         idx.parallelIndexing("./src/data/",2);
         idx.search(Arrays.asList(inputs.split(",")));
