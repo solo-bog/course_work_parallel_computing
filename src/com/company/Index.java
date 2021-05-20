@@ -76,27 +76,28 @@ public class Index {
         catch (Exception e){
             e.printStackTrace();
         }
+        StringBuilder result = new StringBuilder();
         for (String _word : words) {
             String word = _word.toLowerCase();
             List<WordInfo> occurrences = index.get(word);
-            System.out.println("<---" + word + "--->");
+            result.append(word).append(" ");
             if (occurrences != null) {
                 String fileName = "";
                 for (WordInfo t : occurrences) {
                     String currentFileName = t.fileName;
                     if(!currentFileName.equals(fileName)){
-                        System.out.print("\n" + currentFileName + " ");
+                        result.append(currentFileName).append(" ");
                         fileName = currentFileName;
                     }
-                    System.out.print(t.position + " ");
+                    result.append(t.position).append(" ");
                 }
-                System.out.println();
             }
             else {
-                System.out.print("not found");
+                result.append("not found");
             }
-            System.out.println();
+            result.append("\n");
         }
+        System.out.println(result);
     }
 
     public void parallelIndexing(String dataDir,int threadsNumber){
