@@ -6,12 +6,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Index {
-    private final String dataDir;
     private Map<String, List<WordInfo>> index;
-    public Index(String dataDir){
-        this.dataDir = dataDir;
+    public Index(){
         this.index = null;
     }
     private final List<String> stopWords = Arrays.asList("a", "able", "about",
@@ -50,13 +49,13 @@ public class Index {
                 pos++;
                 if (stopWords.contains(word))
                     continue;
-                List<WordInfo> occurrences = index.computeIfAbsent(word,k -> new LinkedList<>());
+                List<WordInfo> occurrences = index.computeIfAbsent(word,k -> Collections.synchronizedList( new LinkedList<>()));
                 occurrences.add(new WordInfo(file.getName(), pos));
             }
         }
     }
 
-    public void serialIndexing(){
+    public void serialIndexing(String dataDir){
         try {
             index = new HashMap<>();
             File[] files = new File(dataDir).listFiles();
@@ -99,5 +98,47 @@ public class Index {
         }
     }
 
+    public void parallelIndexing(String dataDir,int threadsNumber){
+        try {
+            index = new ConcurrentHashMap<>();
+            File[] files = new File(dataDir).listFiles();
+            if(files == null) throw new Exception("data directory is not valid");
+            System.out.println("\n\n<-----PARALLEL ALGORITHM----->");
+            long start = System.currentTimeMillis();
+            List<Thread> threads = new ArrayList<>();
+            for(int i = 0; i < threadsNumber;i++){
+                threads.add(partIndexing(files,i,threadsNumber));
+            }
+            for(Thread t: threads){
+                t.start();
+            }
+            for(Thread t:threads){
+                t.join();
+            }
+            System.out.println( (System.currentTimeMillis() - start));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private Thread partIndexing(final File[] files, final int partNumber, int threadsNumber) {
+        return new Thread(() -> {
+            int from = partNumber * (files.length / threadsNumber);
+            int to = Math.min(files.length,(partNumber + 1) * (files.length / threadsNumber) );
+            for (File file : Arrays.copyOfRange(files, from,to)) {
+                try{
+                    indexFile(file);
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void clear(){
+        if(index != null){
+            index.clear();
+        }
+    }
 
 }
